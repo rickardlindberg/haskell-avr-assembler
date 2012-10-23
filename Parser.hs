@@ -39,6 +39,41 @@ formatConstructor :: String -> Int -> String
 formatConstructor name argumentCount =
     name ++ concat (replicate argumentCount " Int")
 
+data EncodeCase = EncodeCase
+    { name      :: String
+    , arguments :: [Char]
+    , wordSpecs :: [WordSpec]
+    }
+
+data WordSpec = WordSpec [ShiftOperation]
+
+data ShiftOperation = ShiftOperation
+    { value    :: BitValue
+    , position :: Int
+    }
+
+data BitValue = Zero | One | Argument Char Int
+
+formatEncodeCase :: EncodeCase -> String
+formatEncodeCase c = concat
+    [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
+    , "    [\n"
+    , intercalate "    ,\n" groups
+    , "    ]\n"
+    ]
+    where
+        groups = map formatWordSpec (wordSpecs c)
+
+formatWordSpec (WordSpec operations) =
+    "            " ++ intercalate "\n        .|." (map formatShiftOperation operations) ++ "\n"
+
+formatShiftOperation (ShiftOperation value position) =
+    formatBitValue value ++ " `shiftL` " ++ show position
+
+formatBitValue Zero           = "0                     "
+formatBitValue One            = "1                     "
+formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
+
 formatEncode :: String -> [Char] -> [[Char]] -> String
 formatEncode name arguments wordBits = lhs ++ rhs
     where
