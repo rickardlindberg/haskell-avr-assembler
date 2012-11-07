@@ -103,26 +103,6 @@ formatBitValue Zero           = "0                     "
 formatBitValue One            = "1                     "
 formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
-formatEncode :: String -> [Char] -> [[Char]] -> String
-formatEncode name arguments wordBits = lhs ++ rhs
-    where
-      lhs = "encode (" ++ name ++ " " ++ (intersperse ' ' arguments) ++ ") =\n"
-      rhs = "    [\n" ++ intercalate "    ,\n" (map wordLines wordBits) ++ "    ]\n"
-      wordLines bits =
-        "            " ++ intercalate "        .|. " (map (++ "\n") (subWordLines bits))
-      subWordLines bits = loop bits [15,14..] $ initialLeft bits M.empty
-      loop [] _ _ = []
-      loop ('0':bs) (p:ps) left =
-        ("0                      `shiftL` " ++ show p) : loop bs ps left
-      loop ('1':bs) (p:ps) left =
-        ("1                      `shiftL` " ++ show p) : loop bs ps left
-      loop (b:bs)   (p:ps) left =
-        ("((" ++ [b] ++ " `shiftR` " ++ show ((left M.! b) - 1)
-         ++ ") .&. 1) `shiftL` " ++ show p) :
-        (loop bs ps $ M.adjust (subtract 1) b left)
-      initialLeft [] left = left
-      initialLeft (b:bs) left = initialLeft bs $ M.insertWith (+) b 1 left
-
 wordBits :: [Char] -> [[Char]]
 wordBits bits | length bits == 16 = [bits]
               | length bits == 32 = [take 16 bits, drop 16  bits]
