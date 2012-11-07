@@ -6,6 +6,7 @@ import Text.ParserCombinators.Parsec
 
 import Parser.Doc
 import Parser.MakeDoc
+import Parser.FormatDoc
 
 data GeneratorState = GeneratorState
     { constructors :: [String]
@@ -41,26 +42,6 @@ stateToString s = concat $ []
 formatConstructor :: String -> Int -> String
 formatConstructor name argumentCount =
     name ++ concat (replicate argumentCount " Int")
-
-formatEncodeCase :: EncodeCase -> String
-formatEncodeCase c = concat
-    [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
-    , "    [\n"
-    , intercalate "    ,\n" groups
-    , "    ]\n"
-    ]
-    where
-        groups = map formatWordSpec (wordSpecs c)
-
-formatWordSpec (WordSpec operations) =
-    "            " ++ intercalate "\n        .|. " (map formatShiftOperation operations) ++ "\n"
-
-formatShiftOperation (ShiftOperation value position) =
-    formatBitValue value ++ " `shiftL` " ++ show position
-
-formatBitValue Zero           = "0                     "
-formatBitValue One            = "1                     "
-formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
 wordBits :: [Char] -> [[Char]]
 wordBits bits | length bits == 16 = [bits]
