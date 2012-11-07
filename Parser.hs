@@ -1,8 +1,10 @@
-module Avr.Parser where
+module Parser where
 
 import Data.List
 import qualified Data.Map as M
 import Text.ParserCombinators.Parsec
+
+import Parser.Doc
 
 data GeneratorState = GeneratorState
     { constructors :: [String]
@@ -38,21 +40,6 @@ stateToString s = concat $ []
 formatConstructor :: String -> Int -> String
 formatConstructor name argumentCount =
     name ++ concat (replicate argumentCount " Int")
-
-data EncodeCase = EncodeCase
-    { name      :: String
-    , arguments :: [Char]
-    , wordSpecs :: [WordSpec]
-    }
-
-data WordSpec = WordSpec [ShiftOperation]
-
-data ShiftOperation = ShiftOperation
-    { value    :: BitValue
-    , position :: Int
-    }
-
-data BitValue = Zero | One | Argument Char Int
 
 makeEncodeCase :: String -> [Char] -> [[Char]] -> EncodeCase
 makeEncodeCase name arguments wordBits = EncodeCase name arguments wordSpecs
