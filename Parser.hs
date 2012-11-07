@@ -54,6 +54,35 @@ data ShiftOperation = ShiftOperation
 
 data BitValue = Zero | One | Argument Char Int
 
+makeEncodeCase :: String -> [Char] -> [[Char]] -> EncodeCase
+makeEncodeCase name arguments wordBits = EncodeCase name arguments wordSpecs
+    where
+      wordSpecs = map makeWordSpec wordBits
+
+makeWordSpec :: [Char] -> WordSpec
+makeWordSpec bits = WordSpec shiftOperations
+    where
+      sources         = makeSources bits (initialLeft bits M.empty)
+      bitValues       = zipWith makeBitValue bits sources
+      destinations    = [15, 14..]
+      shiftOperations = zipWith ShiftOperation bitValues destinations
+
+      makeSources :: [Char] -> M.Map Char Int -> [Int]
+      makeSources []     _    = []
+      makeSources (b:bs) left =
+        let value = (left M.! b) - 1
+            rest  = makeSources bs (M.adjust (subtract 1) b left)
+        in  value:rest
+
+      initialLeft :: [Char] -> M.Map Char Int -> M.Map Char Int
+      initialLeft []     left = left
+      initialLeft (b:bs) left = initialLeft bs $ M.insertWith (+) b 1 left
+
+      makeBitValue :: Char -> Int -> BitValue
+      makeBitValue '0' _    = Zero
+      makeBitValue '1' _    = One
+      makeBitValue b source = Argument b source
+
 formatEncodeCase :: EncodeCase -> String
 formatEncodeCase c = concat
     [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
@@ -65,7 +94,7 @@ formatEncodeCase c = concat
         groups = map formatWordSpec (wordSpecs c)
 
 formatWordSpec (WordSpec operations) =
-    "            " ++ intercalate "\n        .|." (map formatShiftOperation operations) ++ "\n"
+    "            " ++ intercalate "\n        .|. " (map formatShiftOperation operations) ++ "\n"
 
 formatShiftOperation (ShiftOperation value position) =
     formatBitValue value ++ " `shiftL` " ++ show position
@@ -112,7 +141,7 @@ instructionDescription = do
     bits <- (bit arguments) `sepBy` spaces
     newline
     addConstructor $ formatConstructor name (length arguments)
-    addEncode $ formatEncode name arguments $ wordBits bits
+    addEncode $ formatEncodeCase $ makeEncodeCase name arguments $ wordBits bits
     return ()
     where
         spaces = skipMany (char ' ')
