@@ -15,7 +15,7 @@ addEncode encode (Doc a b c) = (Doc a (encode:b) c)
 makeConstructor :: Name -> Arguments -> Constructor
 makeConstructor = Constructor
 
-makeEncodeCase :: String -> [Char] -> [[Char]] -> EncodeCase
+makeEncodeCase :: Name -> Arguments -> [[Char]] -> EncodeCase
 makeEncodeCase name arguments wordBits = EncodeCase name arguments wordSpecs
     where
       wordSpecs = map makeWordSpec wordBits
@@ -43,4 +43,3 @@ makeWordSpec bits = WordSpec shiftOperations
       makeBitValue '0' _    = Zero
       makeBitValue '1' _    = One
       makeBitValue b source = Argument b source
-
