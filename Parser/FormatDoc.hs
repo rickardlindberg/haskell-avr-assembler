@@ -4,6 +4,24 @@ import Data.List
 
 import Parser.Doc
 
+formatDoc :: Doc -> String
+formatDoc (Doc constructors encodes decodes) = unlines
+    [ "import Data.Word"
+    , ""
+    , "data Instruction ="
+    , concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors
+    , ""
+    , "encode :: Instruction -> [Word16]"
+    , concat $ intersperse "\n    " $ reverse $ map formatEncodeCase encodes
+    , ""
+    , "decode :: [Word16] -> (Instruction, [Word16])"
+    , "decode = undefined"
+    ]
+
+formatConstructor :: Constructor -> String
+formatConstructor (Constructor name args) =
+    name ++ concat (replicate (length args) " Int")
+
 formatEncodeCase :: EncodeCase -> String
 formatEncodeCase c = concat
     [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
