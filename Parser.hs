@@ -3,8 +3,9 @@ module Parser where
 import Text.ParserCombinators.Parsec
 
 import Parser.Doc
-import Parser.MakeDoc
 import Parser.FormatDoc
+import Parser.MakeDoc
+import Parser.Word16Pattern
 
 type Translator a = CharParser Doc a
 
@@ -26,13 +27,15 @@ instructionDescription = do
     bits <- (bit arguments) `sepBy` spaces
     newline
     updateState $ addConstructor $ makeConstructor name arguments
-    updateState $ addEncode      $ makeEncodeCase name arguments $ wordBits bits
-    updateState $ addDecode      $ makeDecodeCase name arguments $ wordBits bits
+    updateState $ addEncode      $ makeEncodeCase name arguments $ wordPatterns bits
+    updateState $ addDecode      $ makeDecodeCase name arguments $ wordPatterns bits
     where
         spaces = skipMany (char ' ')
         argument = lower
         bit fields = oneOf ('0':'1':fields)
 
-wordBits :: [Char] -> [[Char]]
-wordBits bits | length bits == 16 = [bits]
-              | length bits == 32 = [take 16 bits, drop 16  bits]
+wordPatterns :: [Char] -> [Word16Pattern]
+wordPatterns bits | length bits == 16 = [ makeWord16Pattern bits ]
+                  | length bits == 32 = [ makeWord16Pattern $ take 16 bits
+                                        , makeWord16Pattern $ drop 16  bits
+                                        ]

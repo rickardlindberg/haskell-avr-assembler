@@ -1,7 +1,9 @@
 module Parser.MakeDoc where
 
 import qualified Data.Map as M
+
 import Parser.Doc
+import Parser.Word16Pattern
 
 emptyDoc :: Doc
 emptyDoc = Doc [] [] []
@@ -18,13 +20,12 @@ addDecode x (Doc a b c) = (Doc a b (x:c))
 makeConstructor :: Name -> Arguments -> Constructor
 makeConstructor = Constructor
 
-makeEncodeCase :: Name -> Arguments -> [[Char]] -> EncodeCase
-makeEncodeCase name arguments wordBits = EncodeCase name arguments wordSpecs
-    where
-      wordSpecs = map makeWordSpec wordBits
+makeEncodeCase :: Name -> Arguments -> [Word16Pattern] -> EncodeCase
+makeEncodeCase name arguments wordPatterns =
+    EncodeCase name arguments (map makeWordSpec wordPatterns)
 
-makeWordSpec :: [Char] -> WordSpec
-makeWordSpec bits = WordSpec shiftOperations
+makeWordSpec :: Word16Pattern -> WordSpec
+makeWordSpec (Word16Pattern bits) = WordSpec shiftOperations
     where
       sources         = makeSources bits (initialLeft bits M.empty)
       bitValues       = zipWith makeBitValue bits sources
@@ -47,18 +48,12 @@ makeWordSpec bits = WordSpec shiftOperations
       makeBitValue '1' _    = One
       makeBitValue b source = Argument b source
 
-makeDecodeCase :: Name -> Arguments -> [[Char]] -> DecodeCase
-makeDecodeCase name arguments wordBits =
-    DecodeCase name arguments (createMask (head wordBits)) (createValue (head wordBits))
+makeDecodeCase :: Name -> Arguments -> [Word16Pattern] -> DecodeCase
+makeDecodeCase name arguments wordPatterns =
+    DecodeCase name arguments (createMask (head wordPatterns)) (createValue (head wordPatterns))
     where
-        createMask :: [Char] -> Int
+        createMask :: Word16Pattern -> Int
         createMask = sumBits (`elem` "01")
 
-        createValue :: [Char] -> Int
+        createValue :: Word16Pattern -> Int
         createValue = sumBits (`elem` "1")
-
-        sumBits :: (Char -> Bool) -> [Char] -> Int
-        sumBits include bits = sum
-                             $ map ((^) 2 . snd)
-                             $ filter (include . fst)
-                             $ zip bits [15, 14..]
