@@ -25,9 +25,9 @@ makeEncodeCase name arguments wordPatterns =
     EncodeCase name arguments (map makeWordSpec wordPatterns)
 
 makeWordSpec :: Word16Pattern -> WordSpec
-makeWordSpec (Word16Pattern bits) = WordSpec shiftOperations
+makeWordSpec wordPattern@(Word16Pattern bits) = WordSpec shiftOperations
     where
-      sources         = makeSources bits (initialLeft bits M.empty)
+      sources         = makeSources bits (countPieces wordPattern)
       bitValues       = zipWith makeBitValue bits sources
       destinations    = [15, 14..]
       shiftOperations = zipWith ShiftOperation bitValues destinations
@@ -38,10 +38,6 @@ makeWordSpec (Word16Pattern bits) = WordSpec shiftOperations
         let value = (left M.! b) - 1
             rest  = makeSources bs (M.adjust (subtract 1) b left)
         in  value:rest
-
-      initialLeft :: [Char] -> M.Map Char Int -> M.Map Char Int
-      initialLeft []     left = left
-      initialLeft (b:bs) left = initialLeft bs $ M.insertWith (+) b 1 left
 
       makeBitValue :: Char -> Int -> BitValue
       makeBitValue '0' _    = Zero
