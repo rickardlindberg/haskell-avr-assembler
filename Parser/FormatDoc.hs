@@ -15,7 +15,7 @@ formatDoc (Doc constructors encodes decodes) = unlines
     , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
     , ""
     , "decode :: [Word16] -> (Instruction, [Word16])"
-    , "decode (word:words) ="
+    , "decode words ="
     , "    | " ++ (concat $ intersperse "    | " $ reverse $ map formatDecodeCase decodes)
     ]
 
@@ -44,9 +44,13 @@ formatBitValue One            = "1                     "
 formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
 formatDecodeCase :: DecodeCase -> String
-formatDecodeCase (DecodeCase name args mask value) = unlines
+formatDecodeCase (DecodeCase name args mask value) =
+    let n = 2
+    in  unlines
     [ "word .&. " ++ show mask ++ " == " ++ show value ++ " ="
     , "        let"
+    , "            " ++ (intercalate "\n            " $ map (\n -> "word" ++ show n ++ " = head $ take " ++ show n ++ " words") [1..n])
+    , "            words = drop " ++ show n ++ " words"
     , intercalate "\n" $ map (\arg -> "            " ++ [arg] ++ " = ...") args
     , "        in  (" ++ formatData name args ++ ", words)"
     ]
