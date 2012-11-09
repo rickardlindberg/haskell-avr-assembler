@@ -9,7 +9,7 @@ data WordSpec       = WordSpec [ShiftOperation]
 data ShiftOperation = ShiftOperation BitValue Int
 data BitValue       = Zero | One | Argument Argument Int
 
-data DecodeCase     = DecodeCase Name Arguments
+data DecodeCase     = DecodeCase Name Arguments Int Int
 
 type Name           = String
 type Arguments      = [Argument]

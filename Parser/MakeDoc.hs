@@ -48,4 +48,17 @@ makeWordSpec bits = WordSpec shiftOperations
       makeBitValue b source = Argument b source
 
 makeDecodeCase :: Name -> Arguments -> [[Char]] -> DecodeCase
-makeDecodeCase name arguments wordBits = DecodeCase name arguments
+makeDecodeCase name arguments wordBits =
+    DecodeCase name arguments (createMask (head wordBits)) (createValue (head wordBits))
+    where
+        createMask :: [Char] -> Int
+        createMask = sumBits (`elem` "01")
+
+        createValue :: [Char] -> Int
+        createValue = sumBits (`elem` "1")
+
+        sumBits :: (Char -> Bool) -> [Char] -> Int
+        sumBits include bits = sum
+                             $ map ((^) 2 . snd)
+                             $ filter (include . fst)
+                             $ zip bits [15, 14..]

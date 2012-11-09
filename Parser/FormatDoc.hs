@@ -44,9 +44,10 @@ formatBitValue One            = "1                     "
 formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
 formatDecodeCase :: DecodeCase -> String
-formatDecodeCase (DecodeCase name args) = unlines
-    [ "word .&. 0x == 0x ="
-    , "        let x = 1"
+formatDecodeCase (DecodeCase name args mask value) = unlines
+    [ "word .&. " ++ show mask ++ " == " ++ show value ++ " ="
+    , "        let"
+    , intercalate "\n" $ map (\arg -> "            " ++ [arg] ++ " = ...") args
     , "        in  (" ++ formatData name args ++ ", words)"
     ]
 
