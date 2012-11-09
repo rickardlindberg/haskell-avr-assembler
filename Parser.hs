@@ -2,15 +2,15 @@ module Parser where
 
 import Text.ParserCombinators.Parsec
 
-import qualified Parser.Doc as Doc
+import Parser.Doc
 import Parser.MakeDoc
 import Parser.FormatDoc
 
-type Translator a = CharParser Doc.Doc a
+type Translator a = CharParser Doc a
 
 main = do
     input <- getContents
-    case runParser generateHaskell (Doc.Doc [] [] []) "" input of
+    case runParser generateHaskell emptyDoc "" input of
         Left  err -> print err
         Right s   -> putStr s
 
@@ -25,8 +25,8 @@ instructionDescription = do
     spaces
     bits <- (bit arguments) `sepBy` spaces
     newline
-    updateState $ Doc.addConstructor $ Doc.Constructor name arguments
-    updateState $ Doc.addEncode $ makeEncodeCase name arguments $ wordBits bits
+    updateState $ addConstructor $ makeConstructor name arguments
+    updateState $ addEncode $ makeEncodeCase name arguments $ wordBits bits
     return ()
     where
         spaces = skipMany (char ' ')

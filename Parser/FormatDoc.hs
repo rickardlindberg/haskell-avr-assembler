@@ -23,14 +23,14 @@ formatConstructor (Constructor name args) =
     name ++ concat (replicate (length args) " Int")
 
 formatEncodeCase :: EncodeCase -> String
-formatEncodeCase c = concat
-    [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
+formatEncodeCase (EncodeCase name args wordSpecs) = concat
+    [ "encode (" ++ name ++ concatMap (\c -> [' ', c]) args ++ ") =\n"
     , "    [\n"
     , intercalate "    ,\n" groups
     , "    ]"
     ]
     where
-        groups = map formatWordSpec (wordSpecs c)
+        groups = map formatWordSpec wordSpecs
 
 formatWordSpec (WordSpec operations) =
     "            " ++ intercalate "\n        .|. " (map formatShiftOperation operations) ++ "\n"

@@ -3,6 +3,18 @@ module Parser.MakeDoc where
 import qualified Data.Map as M
 import Parser.Doc
 
+emptyDoc :: Doc
+emptyDoc = Doc [] [] []
+
+addConstructor :: Constructor -> Doc -> Doc
+addConstructor constructor (Doc a b c) = (Doc (constructor:a) b c)
+
+addEncode :: EncodeCase -> Doc -> Doc
+addEncode encode (Doc a b c) = (Doc a (encode:b) c)
+
+makeConstructor :: Name -> Arguments -> Constructor
+makeConstructor = Constructor
+
 makeEncodeCase :: String -> [Char] -> [[Char]] -> EncodeCase
 makeEncodeCase name arguments wordBits = EncodeCase name arguments wordSpecs
     where
