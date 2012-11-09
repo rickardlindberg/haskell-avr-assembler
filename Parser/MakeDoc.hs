@@ -7,10 +7,13 @@ emptyDoc :: Doc
 emptyDoc = Doc [] [] []
 
 addConstructor :: Constructor -> Doc -> Doc
-addConstructor constructor (Doc a b c) = (Doc (constructor:a) b c)
+addConstructor x (Doc a b c) = (Doc (x:a) b c)
 
 addEncode :: EncodeCase -> Doc -> Doc
-addEncode encode (Doc a b c) = (Doc a (encode:b) c)
+addEncode x (Doc a b c) = (Doc a (x:b) c)
+
+addDecode :: DecodeCase -> Doc -> Doc
+addDecode x (Doc a b c) = (Doc a b (x:c))
 
 makeConstructor :: Name -> Arguments -> Constructor
 makeConstructor = Constructor
@@ -43,3 +46,6 @@ makeWordSpec bits = WordSpec shiftOperations
       makeBitValue '0' _    = Zero
       makeBitValue '1' _    = One
       makeBitValue b source = Argument b source
+
+makeDecodeCase :: Name -> Arguments -> [[Char]] -> DecodeCase
+makeDecodeCase name arguments wordBits = DecodeCase name arguments

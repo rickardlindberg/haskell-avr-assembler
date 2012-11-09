@@ -15,7 +15,8 @@ formatDoc (Doc constructors encodes decodes) = unlines
     , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
     , ""
     , "decode :: [Word16] -> (Instruction, [Word16])"
-    , "decode = undefined"
+    , "decode (word:words) ="
+    , "    | " ++ (concat $ intersperse "    | " $ reverse $ map formatDecodeCase decodes)
     ]
 
 formatConstructor :: Constructor -> String
@@ -24,7 +25,7 @@ formatConstructor (Constructor name args) =
 
 formatEncodeCase :: EncodeCase -> String
 formatEncodeCase (EncodeCase name args wordSpecs) = concat
-    [ "encode (" ++ name ++ concatMap (\c -> [' ', c]) args ++ ") =\n"
+    [ "encode (" ++ formatData name args ++ ") =\n"
     , "    [\n"
     , intercalate "    ,\n" groups
     , "    ]"
@@ -42,3 +43,12 @@ formatBitValue Zero           = "0                     "
 formatBitValue One            = "1                     "
 formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
+formatDecodeCase :: DecodeCase -> String
+formatDecodeCase (DecodeCase name args) = unlines
+    [ "word .&. 0x == 0x ="
+    , "        let x = 1"
+    , "        in  (" ++ formatData name args ++ ", words)"
+    ]
+
+formatData :: Name -> Arguments -> String
+formatData name args = name ++ concatMap (\c -> [' ', c]) args

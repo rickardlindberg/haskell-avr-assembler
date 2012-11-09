@@ -27,6 +27,7 @@ instructionDescription = do
     newline
     updateState $ addConstructor $ makeConstructor name arguments
     updateState $ addEncode      $ makeEncodeCase name arguments $ wordBits bits
+    updateState $ addDecode      $ makeDecodeCase name arguments $ wordBits bits
     where
         spaces = skipMany (char ' ')
         argument = lower
