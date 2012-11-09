@@ -26,8 +26,7 @@ instructionDescription = do
     bits <- (bit arguments) `sepBy` spaces
     newline
     updateState $ addConstructor $ makeConstructor name arguments
-    updateState $ addEncode $ makeEncodeCase name arguments $ wordBits bits
-    return ()
+    updateState $ addEncode      $ makeEncodeCase name arguments $ wordBits bits
     where
         spaces = skipMany (char ' ')
         argument = lower
