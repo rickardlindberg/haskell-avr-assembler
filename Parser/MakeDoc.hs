@@ -46,10 +46,22 @@ makeWordSpec wordPattern@(Word16Pattern bits) = WordSpec shiftOperations
 
 makeDecodeCase :: Name -> Arguments -> [Word16Pattern] -> DecodeCase
 makeDecodeCase name arguments wordPatterns =
-    DecodeCase name arguments (createMask (head wordPatterns)) (createValue (head wordPatterns))
+    DecodeCase name
+               arguments
+               (createMask (head wordPatterns))
+               (createValue (head wordPatterns))
+               (length wordPatterns)
+               (createExtracts wordPatterns)
     where
         createMask :: Word16Pattern -> Int
         createMask = sumBits (`elem` "01")
 
         createValue :: Word16Pattern -> Int
         createValue = sumBits (`elem` "1")
+
+        createExtracts :: [Word16Pattern] -> [ExtractSpec]
+        createExtracts [p1]     = foo 0 p1
+        createExtracts [p1, p2] = foo 0 p1 ++ foo 1 p2
+
+        foo n p1 =
+            M.elems $ M.mapWithKey (\k v -> ExtractSpec k (map (\(x, y) -> (n, x, y)) (zip v [(length v) - 1, (length v) - 2 ..]))) (M.filterWithKey (\k v -> k `notElem` "01") (positions p1))

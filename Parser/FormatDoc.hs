@@ -44,16 +44,20 @@ formatBitValue One            = "1                     "
 formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 1)"
 
 formatDecodeCase :: DecodeCase -> String
-formatDecodeCase (DecodeCase name args mask value) =
-    let n = 2
-    in  unlines
+formatDecodeCase (DecodeCase name args mask value numWords extracts) = unlines
     [ "word .&. " ++ show mask ++ " == " ++ show value ++ " ="
     , "        let"
-    , "            " ++ (intercalate "\n            " $ map (\n -> "word" ++ show n ++ " = head $ take " ++ show n ++ " words") [1..n])
-    , "            words = drop " ++ show n ++ " words"
-    , intercalate "\n" $ map (\arg -> "            " ++ [arg] ++ " = ...") args
-    , "        in  (" ++ formatData name args ++ ", words)"
+    , "            " ++ (intercalate "\n            " $ map (\n -> "word" ++ show n ++ " = words !! " ++ show n) [0..numWords-1])
+    , "            words = drop " ++ show numWords ++ " words"
+    , intercalate "\n" $ map formatExtractSpec extracts
+    , "        in (" ++ formatData name args ++ ", words)"
     ]
+
+formatExtractSpec :: ExtractSpec -> String
+formatExtractSpec (ExtractSpec arg extracts) =
+    "            " ++ [arg] ++ " =     " ++
+    intercalate "\n                .|. "
+    ((map (\(word, src, dest) -> "(((word" ++ show word ++ " `shiftR` " ++ show src ++ ") .&. 1) `shiftL` " ++ show dest ++ ")") extracts))
 
 formatData :: Name -> Arguments -> String
 formatData name args = name ++ concatMap (\c -> [' ', c]) args
