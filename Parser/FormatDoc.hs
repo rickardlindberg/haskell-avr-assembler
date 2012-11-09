@@ -9,10 +9,10 @@ formatDoc (Doc constructors encodes decodes) = unlines
     [ "import Data.Word"
     , ""
     , "data Instruction ="
-    , concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors
+    , "      " ++ (concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors)
     , ""
     , "encode :: Instruction -> [Word16]"
-    , concat $ intersperse "\n    " $ reverse $ map formatEncodeCase encodes
+    , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
     , ""
     , "decode :: [Word16] -> (Instruction, [Word16])"
     , "decode = undefined"
@@ -27,7 +27,7 @@ formatEncodeCase c = concat
     [ "encode (" ++ name c ++ concatMap (\c -> [' ', c]) (arguments c) ++ ") =\n"
     , "    [\n"
     , intercalate "    ,\n" groups
-    , "    ]\n"
+    , "    ]"
     ]
     where
         groups = map formatWordSpec (wordSpecs c)
