@@ -6,22 +6,33 @@ import Parser.Doc
 
 formatDoc :: Doc -> String
 formatDoc (Doc constructors encodes decodes) = unlines
-    [ "import Data.Word"
+    [ "module Instructions where"
+    , ""
+    , "import Control.Monad"
+    , "import Data.Bits"
+    , "import Data.Word"
+    , "import Test.QuickCheck (Arbitrary(), arbitrary, oneof)"
     , ""
     , "data Instruction ="
     , "      " ++ (concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors)
+    , "    deriving (Show, Eq)"
+    , ""
+    , "instance Arbitrary Instruction where"
+    , "    arbitrary = oneof"
+    , "        [ liftM2 Add arbitrary arbitrary"
+    , "        ]"
     , ""
     , "encode :: Instruction -> [Word16]"
     , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
     , ""
     , "decode :: [Word16] -> (Instruction, [Word16])"
-    , "decode words ="
+    , "decode words"
     , "    | " ++ (concat $ intersperse "    | " $ reverse $ map formatDecodeCase decodes)
     ]
 
 formatConstructor :: Constructor -> String
 formatConstructor (Constructor name args) =
-    name ++ concat (replicate (length args) " Int")
+    name ++ concat (replicate (length args) " Word16")
 
 formatEncodeCase :: EncodeCase -> String
 formatEncodeCase (EncodeCase name args wordSpecs) = concat
@@ -45,12 +56,12 @@ formatBitValue (Argument c i) = "((" ++ [c] ++ " `shiftR` " ++ show i ++ ") .&. 
 
 formatDecodeCase :: DecodeCase -> String
 formatDecodeCase (DecodeCase name args mask value numWords extracts) = unlines
-    [ "word .&. " ++ show mask ++ " == " ++ show value ++ " ="
+    [ "head words .&. " ++ show mask ++ " == " ++ show value ++ " ="
     , "        let"
     , "            " ++ (intercalate "\n            " $ map (\n -> "word" ++ show n ++ " = words !! " ++ show n) [0..numWords-1])
-    , "            words = drop " ++ show numWords ++ " words"
+    , "            newwords = drop " ++ show numWords ++ " words"
     , intercalate "\n" $ map formatExtractSpec extracts
-    , "        in (" ++ formatData name args ++ ", words)"
+    , "        in (" ++ formatData name args ++ ", newwords)"
     ]
 
 formatExtractSpec :: ExtractSpec -> String
