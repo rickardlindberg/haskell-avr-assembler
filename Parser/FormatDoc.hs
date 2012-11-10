@@ -1,17 +1,18 @@
 module Parser.FormatDoc where
 
 import Data.List
+import qualified Data.Map as M
 
 import Parser.Doc
 
 formatDoc :: Doc -> String
-formatDoc (Doc constructors encodes decodes) = unlines
+formatDoc (Doc constructors arbitraries encodes decodes) = unlines
     [ "module Instructions where"
     , ""
     , "import Control.Monad"
     , "import Data.Bits"
     , "import Data.Word"
-    , "import Test.QuickCheck (Arbitrary(), arbitrary, oneof)"
+    , "import Test.QuickCheck (Arbitrary(), arbitrary, oneof, choose, Gen)"
     , ""
     , "data Instruction ="
     , "      " ++ (concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors)
@@ -19,8 +20,11 @@ formatDoc (Doc constructors encodes decodes) = unlines
     , ""
     , "instance Arbitrary Instruction where"
     , "    arbitrary = oneof"
-    , "        [ liftM2 Add arbitrary arbitrary"
+    , "        [ " ++ (intercalate "\n        , " $ reverse $ map formatArbitrary arbitraries)
     , "        ]"
+    , "        where"
+    , "            word16lowere :: Int -> Gen Word16"
+    , "            word16lowere n = liftM fromIntegral (choose (0, n))"
     , ""
     , "encode :: Instruction -> [Word16]"
     , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
@@ -29,6 +33,15 @@ formatDoc (Doc constructors encodes decodes) = unlines
     , "decode words"
     , "    | " ++ (concat $ intersperse "    | " $ reverse $ map formatDecodeCase decodes)
     ]
+
+formatArbitrary :: Arbitrary -> String
+formatArbitrary (Arbitrary name args pieces) =
+    "liftM" ++ liftVersion args ++ " " ++ name ++ " " ++ intercalate " " innerArbitraries
+    where
+        liftVersion args | length args == 1 = ""
+                         | otherwise        = show (length args)
+        innerArbitraries = map innerArbitrary args
+        innerArbitrary arg = "(word16lowere (2^" ++ show (pieces M.! arg) ++ " - 1))"
 
 formatConstructor :: Constructor -> String
 formatConstructor (Constructor name args) =

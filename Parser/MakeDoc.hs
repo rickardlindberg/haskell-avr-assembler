@@ -6,19 +6,26 @@ import Parser.Doc
 import Parser.Word16Pattern
 
 emptyDoc :: Doc
-emptyDoc = Doc [] [] []
+emptyDoc = Doc [] [] [] []
 
 addConstructor :: Constructor -> Doc -> Doc
-addConstructor x (Doc a b c) = (Doc (x:a) b c)
+addConstructor x (Doc a b c d) = (Doc (x:a) b c d)
+
+addArbitrary :: Arbitrary -> Doc -> Doc
+addArbitrary x (Doc a b c d) = (Doc a (x:b) c d)
 
 addEncode :: EncodeCase -> Doc -> Doc
-addEncode x (Doc a b c) = (Doc a (x:b) c)
+addEncode x (Doc a b c d) = (Doc a b (x:c) d)
 
 addDecode :: DecodeCase -> Doc -> Doc
-addDecode x (Doc a b c) = (Doc a b (x:c))
+addDecode x (Doc a b c d) = (Doc a b c (x:d))
 
 makeConstructor :: Name -> Arguments -> Constructor
 makeConstructor = Constructor
+
+makeArbitrary :: Name -> Arguments -> [Word16Pattern] -> Arbitrary
+makeArbitrary name args patterns =
+    Arbitrary name args (M.unions $ map countPieces patterns)
 
 makeEncodeCase :: Name -> Arguments -> [Word16Pattern] -> EncodeCase
 makeEncodeCase name arguments wordPatterns =

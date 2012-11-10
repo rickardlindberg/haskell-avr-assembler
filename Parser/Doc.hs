@@ -1,8 +1,12 @@
 module Parser.Doc where
 
-data Doc            = Doc [Constructor] [EncodeCase] [DecodeCase]
+import qualified Data.Map as M
+
+data Doc            = Doc [Constructor] [Arbitrary] [EncodeCase] [DecodeCase]
 
 data Constructor    = Constructor Name Arguments
+
+data Arbitrary      = Arbitrary Name Arguments (M.Map Argument Int)
 
 data EncodeCase     = EncodeCase Name Arguments [WordSpec]
 data WordSpec       = WordSpec [ShiftOperation]

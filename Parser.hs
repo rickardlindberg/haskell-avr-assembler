@@ -27,6 +27,7 @@ instructionDescription = do
     bits <- (bit arguments) `sepBy` spaces
     newline
     updateState $ addConstructor $ makeConstructor name arguments
+    updateState $ addArbitrary   $ makeArbitrary name arguments $ wordPatterns bits
     updateState $ addEncode      $ makeEncodeCase name arguments $ wordPatterns bits
     updateState $ addDecode      $ makeDecodeCase name arguments $ wordPatterns bits
     where
