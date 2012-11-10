@@ -23,8 +23,10 @@ formatDoc (Doc constructors arbitraries encodes decodes) = unlines
     , "        [ " ++ (intercalate "\n        , " $ reverse $ map formatArbitrary arbitraries)
     , "        ]"
     , "        where"
-    , "            word16lowere :: Int -> Gen Word16"
-    , "            word16lowere n = liftM fromIntegral (choose (0, n))"
+    , "            numberWithByteSize :: Int -> Gen Word16"
+    , "            numberWithByteSize byteSize = liftM fromIntegral (choose (0, maxForByteSize byteSize))"
+    , "            maxForByteSize :: Int -> Int"
+    , "            maxForByteSize byteSize = 2^byteSize - 1"
     , ""
     , "encode :: Instruction -> [Word16]"
     , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
@@ -41,7 +43,7 @@ formatArbitrary (Arbitrary name args pieces) =
         liftVersion args | length args == 1 = ""
                          | otherwise        = show (length args)
         innerArbitraries = map innerArbitrary args
-        innerArbitrary arg = "(word16lowere (2^" ++ show (pieces M.! arg) ++ " - 1))"
+        innerArbitrary arg = "(numberWithByteSize " ++ show (pieces M.! arg) ++ ")"
 
 formatConstructor :: Constructor -> String
 formatConstructor (Constructor name args) =
