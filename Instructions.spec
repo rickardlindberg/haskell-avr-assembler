@@ -9,3 +9,21 @@ BLD    d,b   1111 100d dddd 0bbb
 BRBC   s,k   1111 01kk kkkk ksss
 BRBS   s,k   1111 00kk kkkk ksss
 BRCC   k     1111 01kk kkkk k000
+BRCS   k     1111 00kk kkkk k000
+BREAK        1001 0101 1001 1000
+BREQ   k     1111 00kk kkkk k001
+BRGE   k     1111 01kk kkkk k100
+BRHC   k     1111 01kk kkkk k101
+BRHS   k     1111 00kk kkkk k101
+BRID   k     1111 01kk kkkk k111
+BRIE   k     1111 00kk kkkk k111
+BRLO   k     1111 00kk kkkk k000
+BRLT   k     1111 00kk kkkk k100
+BRMI   k     1111 00kk kkkk k010
+BRNE   k     1111 01kk kkkk k001
+BRPL   k     1111 01kk kkkk k010
+BRSH   k     1111 01kk kkkk k000
+BRTC   k     1111 01kk kkkk k110
+BRTS   k     1111 00kk kkkk k110
+BRVC   k     1111 01kk kkkk k011
+BRVS   k     1111 00kk kkkk k011
