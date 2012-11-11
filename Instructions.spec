@@ -32,3 +32,19 @@ BST    d,b   1111 101d dddd 0bbb
 CALL   k     1001 010k kkkk 111k kkkk kkkk kkkk kkkk
 CBI    a,b   1001 1000 aaaa abbb
 -- TODO: CBR
+CLC          1001 0100 1000 1000
+CLH          1001 0100 1101 1000
+CLI          1001 0100 1111 1000
+CLN          1001 0100 1010 1000
+-- TODO: CLR
+CLS          1001 0100 1100 1000
+CLT          1001 0100 1110 1000
+CLV          1001 0100 1011 1000
+CLZ          1001 0100 1001 1000
+COM    d     1001 010d dddd 0000
+CP     d,r   0001 01rd dddd rrrr
+CPC    d,r   0000 01rd dddd rrrr
+CPI    d,k   0011 kkkk dddd kkkk
+CPSE   d,r   0001 00rd dddd rrrr
+DEC    d     1001 010d dddd 1010
+DES    k     1001 0100 kkkk 1011

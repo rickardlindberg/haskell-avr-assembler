@@ -27,7 +27,16 @@ prop_encodeDecode x = normalize x' == normalize x
         normalize (BRTS k) = BRBS 6 k
         normalize (BRIE k) = BRBS 7 k
 
-        normalize x          = x
+        normalize CLC      = BCLR 0
+        normalize CLZ      = BCLR 1
+        normalize CLN      = BCLR 2
+        normalize CLV      = BCLR 3
+        normalize CLS      = BCLR 4
+        normalize CLH      = BCLR 5
+        normalize CLT      = BCLR 6
+        normalize CLI      = BCLR 7
+
+        normalize x        = x
 
 main = do
     quickCheck prop_encodeDecode
