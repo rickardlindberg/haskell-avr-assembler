@@ -67,8 +67,18 @@ makeDecodeCase name arguments wordPatterns =
         createValue = sumBits (`elem` "1")
 
         createExtracts :: [Word16Pattern] -> [ExtractSpec]
-        createExtracts [p1]     = foo 0 p1
-        createExtracts [p1, p2] = foo 0 p1 ++ foo 1 p2
+        createExtracts [p1]     = foo 0  0 p1
+        createExtracts [p1, p2] = mergeExtractSpecs (foo 16 0 p1) (foo 0 1 p2)
 
-        foo n p1 =
-            M.elems $ M.mapWithKey (\k v -> ExtractSpec k (map (\(x, y) -> (n, x, y)) (zip v [(length v) - 1, (length v) - 2 ..]))) (M.filterWithKey (\k v -> k `notElem` "01") (positions p1))
+        foo offset n p1 =
+            M.elems $ M.mapWithKey (\k v -> ExtractSpec k (map (\(x, y) -> (n, x, y)) (zip v [(length v) - 1, (length v) - 2 ..]))) (M.filterWithKey (\k v -> k `notElem` "01") (positions offset p1))
+
+        mergeExtractSpecs :: [ExtractSpec] -> [ExtractSpec] -> [ExtractSpec]
+        mergeExtractSpecs []     res = res
+        mergeExtractSpecs (x:xs) res = mergeExtractSpecs xs (mergeSingle x res)
+
+        mergeSingle :: ExtractSpec -> [ExtractSpec] -> [ExtractSpec]
+        mergeSingle x [] = [x]
+        mergeSingle one@(ExtractSpec arg tuples) (two@(ExtractSpec arg' tuples'):xs)
+            | arg == arg' = ExtractSpec arg (tuples ++ tuples') : xs
+            | otherwise   = two : mergeSingle one xs

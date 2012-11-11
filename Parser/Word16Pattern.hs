@@ -24,7 +24,7 @@ countPieces (Word16Pattern bits) = initialLeft bits M.empty
         initialLeft []     left = left
         initialLeft (b:bs) left = initialLeft bs $ M.insertWith (+) b 1 left
 
-positions :: Word16Pattern -> M.Map Char [Int]
-positions (Word16Pattern bits) =
+positions :: Int -> Word16Pattern -> M.Map Char [Int]
+positions offset (Word16Pattern bits) =
       M.fromListWith (\existing new -> new ++ existing)
-    $ zip bits (map (:[]) allPositions)
+    $ zip bits (map (:[]) (map (+ offset) allPositions))
