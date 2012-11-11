@@ -1,5 +1,7 @@
 module Parser where
 
+import System.Exit
+import System.IO
 import Text.ParserCombinators.Parsec
 
 import Parser.Doc
@@ -12,7 +14,7 @@ type Translator a = CharParser Doc a
 main = do
     input <- getContents
     case runParser generateHaskell emptyDoc "" input of
-        Left  err -> print err
+        Left  err -> hPrint stderr err >> exitFailure
         Right s   -> putStr s
 
 generateHaskell :: Translator String
