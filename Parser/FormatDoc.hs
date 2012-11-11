@@ -38,10 +38,11 @@ formatDoc (Doc constructors arbitraries encodes decodes) = unlines
 
 formatArbitrary :: Arbitrary -> String
 formatArbitrary (Arbitrary name args pieces) =
-    "liftM" ++ liftVersion args ++ " " ++ name ++ " " ++ intercalate " " innerArbitraries
+    liftVersion args ++ " " ++ name ++ " " ++ intercalate " " innerArbitraries
     where
-        liftVersion args | length args == 1 = " "
-                         | otherwise        = show (length args)
+        liftVersion args | length args == 0 = "return"
+                         | length args == 1 = "liftM "
+                         | otherwise        = "liftM" ++ show (length args)
         innerArbitraries = map innerArbitrary args
         innerArbitrary arg = "(numberWithByteSize " ++ show (pieces M.! arg) ++ ")"
 
