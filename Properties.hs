@@ -7,26 +7,25 @@ prop_encodeDecode x = normalize x' == normalize x
     where
         (x', []) = decode (encode x)
 
-        normalize (BRBC 0 k) = BRCC k
-        normalize (BRBC 1 k) = BRNE k
-        normalize (BRBC 2 k) = BRPL k
-        normalize (BRBC 3 k) = BRVC k
-        normalize (BRBC 4 k) = BRGE k
-        normalize (BRBC 5 k) = BRHC k
-        normalize (BRBC 6 k) = BRTC k
-        normalize (BRBC 7 k) = BRID k
+        normalize (BRSH k) = BRBC 0 k
+        normalize (BRCC k) = BRBC 0 k
+        normalize (BRNE k) = BRBC 1 k
+        normalize (BRPL k) = BRBC 2 k
+        normalize (BRVC k) = BRBC 3 k
+        normalize (BRGE k) = BRBC 4 k
+        normalize (BRHC k) = BRBC 5 k
+        normalize (BRTC k) = BRBC 6 k
+        normalize (BRID k) = BRBC 7 k
 
-        normalize (BRBS 0 k) = BRCS k
-        normalize (BRBS 1 k) = BREQ k
-        normalize (BRBS 2 k) = BRMI k
-        normalize (BRBS 3 k) = BRVS k
-        normalize (BRBS 4 k) = BRLT k
-        normalize (BRBS 5 k) = BRHS k
-        normalize (BRBS 6 k) = BRTS k
-        normalize (BRBS 7 k) = BRIE k
-
-        normalize (BRSH   k) = BRCC k
-        normalize (BRLO   k) = BRCS k
+        normalize (BRLO k) = BRBS 0 k
+        normalize (BRCS k) = BRBS 0 k
+        normalize (BREQ k) = BRBS 1 k
+        normalize (BRMI k) = BRBS 2 k
+        normalize (BRVS k) = BRBS 3 k
+        normalize (BRLT k) = BRBS 4 k
+        normalize (BRHS k) = BRBS 5 k
+        normalize (BRTS k) = BRBS 6 k
+        normalize (BRIE k) = BRBS 7 k
 
         normalize x          = x
 
