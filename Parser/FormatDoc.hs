@@ -40,7 +40,7 @@ formatArbitrary :: Arbitrary -> String
 formatArbitrary (Arbitrary name args pieces) =
     "liftM" ++ liftVersion args ++ " " ++ name ++ " " ++ intercalate " " innerArbitraries
     where
-        liftVersion args | length args == 1 = ""
+        liftVersion args | length args == 1 = " "
                          | otherwise        = show (length args)
         innerArbitraries = map innerArbitrary args
         innerArbitrary arg = "(numberWithByteSize " ++ show (pieces M.! arg) ++ ")"
