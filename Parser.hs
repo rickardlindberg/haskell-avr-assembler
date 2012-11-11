@@ -18,7 +18,7 @@ main = do
         Right s   -> putStr s
 
 generateHaskell :: Translator String
-generateHaskell = many instructionDescription >> fmap formatDoc getState
+generateHaskell = many (comment <|> instructionDescription) >> eof >> fmap formatDoc getState
 
 instructionDescription :: Translator ()
 instructionDescription = do
@@ -36,6 +36,12 @@ instructionDescription = do
         spaces = skipMany (char ' ')
         argument = lower
         bit fields = oneOf ('0':'1':fields)
+
+comment :: Translator ()
+comment = do
+    try (string "--")
+    manyTill anyChar (try newline)
+    return ()
 
 wordPatterns :: [Char] -> [Word16Pattern]
 wordPatterns bits | length bits == 16 = [ makeWord16Pattern bits ]

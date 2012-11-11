@@ -30,3 +30,5 @@ BRVS   k     1111 00kk kkkk k011
 BSET   s     1001 0100 0sss 1000
 BST    d,b   1111 101d dddd 0bbb
 CALL   k     1001 010k kkkk 111k kkkk kkkk kkkk kkkk
+CBI    a,b   1001 1000 aaaa abbb
+-- TODO: CBR
