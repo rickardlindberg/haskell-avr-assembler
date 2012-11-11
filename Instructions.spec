@@ -1,2 +1,11 @@
-Add d,r 0000 11rd dddd rrrr
-Sts k,d  1001 001d dddd 0000 kkkk kkkk kkkk kkkk
+ADC    d,r   0001 11rd dddd rrrr
+ADD    d,r   0000 11rd dddd rrrr
+ADIW   d,k   1001 0110 kkdd kkkk
+AND    d,r   0010 00rd dddd rrrr
+ANDI   d,k   0111 kkkk dddd kkkk
+ASR    d     1001 010d dddd 0101
+BCLR   s     1001 0100 1sss 1000
+BLD    d,b   1111 100d dddd 0bbb
+BRBC   s,k   1111 01kk kkkk ksss
+BRBS   s,k   1111 00kk kkkk ksss
+BRCC   k     1111 01kk kkkk k000
