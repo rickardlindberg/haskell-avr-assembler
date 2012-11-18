@@ -8,6 +8,10 @@ import Parser.Word16Pattern
 emptyDoc :: Doc
 emptyDoc = Doc [] [] [] []
 
+reverseDocParts :: Doc -> Doc
+reverseDocParts (Doc a b c d) = Doc (reverse a) (reverse b)
+                                    (reverse c) (reverse d)
+
 addConstructor :: Constructor -> Doc -> Doc
 addConstructor x (Doc a b c d) = (Doc (x:a) b c d)
 

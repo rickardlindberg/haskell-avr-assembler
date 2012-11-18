@@ -15,12 +15,12 @@ formatDoc (Doc constructors arbitraries encodes decodes) = unlines
     , "import Test.QuickCheck (Arbitrary(), arbitrary, oneof, choose, Gen)"
     , ""
     , "data Instruction ="
-    , "      " ++ (concat $ intersperse "\n    | " $ reverse $ map formatConstructor constructors)
+    , "      " ++ (intercalate "\n    | " $ map formatConstructor constructors)
     , "    deriving (Show, Eq)"
     , ""
     , "instance Arbitrary Instruction where"
     , "    arbitrary = oneof"
-    , "        [ " ++ (intercalate "\n        , " $ reverse $ map formatArbitrary arbitraries)
+    , "        [ " ++ (intercalate "\n        , " $ map formatArbitrary arbitraries)
     , "        ]"
     , "        where"
     , "            numberWithByteSize :: Int -> Gen Word16"
@@ -29,26 +29,26 @@ formatDoc (Doc constructors arbitraries encodes decodes) = unlines
     , "            maxForByteSize byteSize = 2^byteSize - 1"
     , ""
     , "encode :: Instruction -> [Word16]"
-    , concat $ intersperse "    \n" $ reverse $ map formatEncodeCase encodes
+    , intercalate "    \n" $ map formatEncodeCase encodes
     , ""
     , "decode :: [Word16] -> (Instruction, [Word16])"
     , "decode words"
-    , "    | " ++ (concat $ intersperse "    | " $ reverse $ map formatDecodeCase decodes)
+    , prepend "    | " $ map formatDecodeCase decodes
     ]
+
+formatConstructor :: Constructor -> String
+formatConstructor (Constructor name args) =
+    name ++ concat (replicate (length args) " Word16")
 
 formatArbitrary :: Arbitrary -> String
 formatArbitrary (Arbitrary name args pieces) =
-    liftVersion args ++ " " ++ name ++ " " ++ intercalate " " innerArbitraries
+    liftVersion args ++ " " ++ name ++ prepend " " innerArbitraries
     where
         liftVersion args | length args == 0 = "return"
                          | length args == 1 = "liftM "
                          | otherwise        = "liftM" ++ show (length args)
         innerArbitraries = map innerArbitrary args
         innerArbitrary arg = "(numberWithByteSize " ++ show (pieces M.! arg) ++ ")"
-
-formatConstructor :: Constructor -> String
-formatConstructor (Constructor name args) =
-    name ++ concat (replicate (length args) " Word16")
 
 formatEncodeCase :: EncodeCase -> String
 formatEncodeCase (EncodeCase name args wordSpecs) = concat
@@ -88,3 +88,6 @@ formatExtractSpec (ExtractSpec arg extracts) =
 
 formatData :: Name -> Arguments -> String
 formatData name args = name ++ concatMap (\c -> [' ', c]) args
+
+prepend :: String -> [String] -> String
+prepend x xs = concatMap (x ++) xs

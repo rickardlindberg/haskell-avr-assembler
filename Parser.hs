@@ -18,7 +18,7 @@ main = do
         Right s   -> putStr s
 
 generateHaskell :: Translator String
-generateHaskell = many (comment <|> instructionDescription) >> eof >> fmap formatDoc getState
+generateHaskell = many (comment <|> instructionDescription) >> eof >> fmap (formatDoc . reverseDocParts) getState
 
 instructionDescription :: Translator ()
 instructionDescription = do
