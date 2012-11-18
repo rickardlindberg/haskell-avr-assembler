@@ -71,11 +71,18 @@ makeDecodeCase name arguments wordPatterns =
         createValue = sumBits (`elem` "1")
 
         createExtracts :: [Word16Pattern] -> [ExtractSpec]
-        createExtracts [p1]     = foo 0  0 p1
-        createExtracts [p1, p2] = mergeExtractSpecs (foo 16 0 p1) (foo 0 1 p2)
+        createExtracts = foldr mergeExtractSpecs []
+                       . map extractSpecsFor
+                       . zip [0..]
 
-        foo offset n p1 =
-            M.elems $ M.mapWithKey (\k v -> ExtractSpec k (map (\(x, y) -> (n, x, y)) (zip v [(length v) - 1, (length v) - 2 ..]))) (M.filterWithKey (\k v -> k `notElem` "01") (positions offset p1))
+        extractSpecsFor :: (Int, Word16Pattern) -> [ExtractSpec]
+        extractSpecsFor (whichWord, pattern) =
+            M.elems $ M.mapWithKey
+                (\k v -> ExtractSpec
+                    k
+                    (map (\(x, y) -> (whichWord, x, y))
+                         (zip v [(length v) - 1, (length v) - 2 ..])))
+                (M.filterWithKey (\k v -> k `notElem` "01") (positions pattern))
 
         mergeExtractSpecs :: [ExtractSpec] -> [ExtractSpec] -> [ExtractSpec]
         mergeExtractSpecs []     res = res
