@@ -48,3 +48,29 @@ CPI    d,k   0011 kkkk dddd kkkk
 CPSE   d,r   0001 00rd dddd rrrr
 DEC    d     1001 010d dddd 1010
 DES    k     1001 0100 kkkk 1011
+EICALL       1001 0101 0001 1001
+EIJMP        1001 0100 0001 1001
+-- TODO: ELPM
+EOR    d,r   0010 01rd dddd rrrr
+FMUL   d,r   0000 0011 0ddd 1rrr
+FMULS  d,r   0000 0011 1ddd 0rrr
+FMULSU d,r   0000 0011 1ddd 1rrr
+ICALL        1001 0101 0000 1001
+IJMP         1001 0100 0000 1001
+IN     d,a   1011 0aad dddd aaaa
+INC    d     1001 010d dddd 0011
+JMP    k     1001 010k kkkk 110k kkkk kkkk kkkk kkkk
+-- TODO: LAC
+-- TODO: LAS
+-- TODO: LAT
+LDOne  d     1001 000d dddd 1100
+LDTwo  d     1001 000d dddd 1101
+LDThre d     1001 000d dddd 1110
+-- TODO: LD (LDD)
+-- TODO: LD (LDD)
+LDI    d,k   1110 kkkk dddd kkkk
+LDS    d,k   1001 000d dddd 0000 kkkk kkkk kkkk kkkk
+-- TODO: LDS (16)
+LPMA         1001 0101 1100 1000
+LPMB   d     1001 000d dddd 0100
+LPMC   d     1001 000d dddd 0101
