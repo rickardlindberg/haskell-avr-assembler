@@ -29,7 +29,7 @@ makeConstructor = Constructor
 
 makeArbitrary :: Name -> Arguments -> [Word16Pattern] -> Arbitrary
 makeArbitrary name args patterns =
-    Arbitrary name args (M.unions $ map countPieces patterns)
+    Arbitrary name args (M.unionsWith (+) $ map countPieces patterns)
 
 makeEncodeCase :: Name -> Arguments -> [Word16Pattern] -> EncodeCase
 makeEncodeCase name arguments wordPatterns =
