@@ -36,6 +36,15 @@ prop_encodeDecode x = normalize x' == normalize x
         normalize CLT      = BCLR 6
         normalize CLI      = BCLR 7
 
+        normalize SEC      = BSET 0
+        normalize SEZ      = BSET 1
+        normalize SEN      = BSET 2
+        normalize SEV      = BSET 3
+        normalize SES      = BSET 4
+        normalize SEH      = BSET 5
+        normalize SET      = BSET 6
+        normalize SEI      = BSET 7
+
         normalize x        = x
 
 main = do

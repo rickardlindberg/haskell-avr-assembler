@@ -74,3 +74,44 @@ LDS    d,k   1001 000d dddd 0000 kkkk kkkk kkkk kkkk
 LPMA         1001 0101 1100 1000
 LPMB   d     1001 000d dddd 0100
 LPMC   d     1001 000d dddd 0101
+-- TODO: LSL (conflict with add?)
+LSR    d     1001 010d dddd 0110
+MOV    d,r   0010 11rd dddd rrrr
+MOVW   d,r   0000 0001 dddd rrrr
+MUL    d,r   1001 11rd dddd rrrr
+MULS   d,r   0000 0010 dddd rrrr
+MULSU  d,r   0000 0011 0ddd 0rrr
+NEG    d     1001 010d dddd 0001
+NOP          0000 0000 0000 0000
+OR     d,r   0010 10rd dddd rrrr
+ORI    d,k   0110 kkkk dddd kkkk
+OUT    a,r   1011 1aar rrrr aaaa
+POP    d     1001 000d dddd 1111
+PUSH   r     1001 001r rrrr 1111
+RCALL  k     1101 kkkk kkkk kkkk
+RET          1001 0101 0000 1000
+RETI         1001 0101 0001 1000
+RJMP   k     1100 kkkk kkkk kkkk
+-- TODO: ROL
+ROR    d     1001 010d dddd 0111
+SBC    d,r   0000 10rd dddd rrrr
+SBCI   d,k   0100 kkkk dddd kkkk
+SBI    a,b   1001 1010 aaaa abbb
+SBIC   a,b   1001 1001 aaaa abbb
+SBIS   a,b   1001 1011 aaaa abbb
+SBIW   d,k   1001 0111 kkdd kkkk
+-- TODO: SBR (becomes ORI?)
+SBRC   r,b   1111 110r rrrr 0bbb
+SBRS   r,b   1111 111r rrrr 0bbb
+SEC          1001 0100 0000 1000
+SEH          1001 0100 0101 1000
+SEI          1001 0100 0111 1000
+SEN          1001 0100 0010 1000
+-- TODO: SER (becomes LDI?)
+SES          1001 0100 0100 1000
+SET          1001 0100 0110 1000
+SEV          1001 0100 0011 1000
+SEZ          1001 0100 0001 1000
+SLEEP        1001 0101 1000 1000
+SPM          1001 0101 1110 1000
+-- TODO: SPM 2
